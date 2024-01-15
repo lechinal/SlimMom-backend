@@ -1,0 +1,292 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "version": "0.0.1",
+    "title": "SlimMom",
+    "description": "Slim-Mom is an application designed for those interested in managing and monitoring their calorie intake, helping them achieve and maintain their health and weight-related goals.",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "servers": [
+    {
+      "url": "http://localhost:5000/"
+    }
+  ],
+  "apis": ["./routes/*.js"],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Authorization endpoints"
+    }
+  ],
+  "paths": {
+    "/api/auth/signup": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "User registration",
+        "parameters": [],
+        "security": [],
+        "requestBody": {
+          "description": "Registration's object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)"
+          },
+          "409": {
+            "description": "Provided email already exists"
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "User login",
+        "parameters": [],
+        "security": [],
+        "requestBody": {
+          "description": "Login's object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Email or password is wrong"
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "User logout",
+        "parameters": [],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/api/auth/current": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Current User",
+        "parameters": [],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authorized"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RegistrationRequest": {
+        "type": "object",
+        "required": ["name", "email", "password"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "User's name",
+            "example": "Nicolas"
+          },
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email",
+            "example": "user@email.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password",
+            "example": "qwerty123"
+          }
+        }
+      },
+      "RegistrationResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYTg2NzQyNDdiZjlmZWEyZDQ5OTUwZiIsImlhdCI5MTY3MTk4MDg2N30.Zdd-6aGU9Gy22M591DRJe0gUuHpgy7umQBwECvfm0pk"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "User's name",
+                "example": "Nicolas"
+              },
+              "email": {
+                "type": "string",
+                "description": "User's email",
+                "format": "email"
+              },
+              "userId": {
+                "type": "string",
+                "description": "User's id",
+                "example": "63a8674247bf9fea2d49850f"
+              }
+            }
+          }
+        },
+        "example": {
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYTg2NzQyNDdiZjlmZWEyZDQ5OTUwZiIsImlhdCI5MTY3MTk4MDg2N30.Zdd-6aGU9Gy22M591DRJe0gUuHpgy7umQBwECvfm0pk",
+          "user": {
+            "name": "Nicolas",
+            "email": "user@email.com",
+            "userId": "63a8674247bf9fea2d49850f"
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email",
+            "example": "user@email.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password",
+            "example": "qwerty123"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYTg2NzQyNDdiZjlmZWEyZDQ5OTUwZiIsImlhdCI5MTY3MTk4MDg2N30.Zdd-6aGU9Gy22M591DRJe0gUuHpgy7umQBwECvfm0pk"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "User's name",
+                "example": "Nicolas"
+              },
+              "email": {
+                "type": "string",
+                "description": "User's email",
+                "format": "email"
+              }
+            }
+          }
+        },
+        "example": {
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYTg2NzQyNDdiZjlmZWEyZDQ5OTUwZiIsImlhdCI5MTY3MTk4MDg2N30.Zdd-6aGU9Gy22M591DRJe0gUuHpgy7umQBwECvfm0pk",
+          "user": {
+            "name": "Nicolas",
+            "email": "user@email.com"
+          }
+        }
+      },
+      "CurrentResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "User's name",
+                "example": "Nicolas"
+              },
+              "email": {
+                "type": "string",
+                "description": "User's email",
+                "format": "email"
+              }
+            }
+          }
+        },
+        "example": {
+          "user": {
+            "name": "Nicolas",
+            "email": "user@email.com"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
